@@ -1,0 +1,6 @@
+file_format: "1"
+id: keypad
+name: Keypad
+type: shield
+siblings:
+  - keypad
