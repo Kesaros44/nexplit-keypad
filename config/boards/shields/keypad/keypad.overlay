@@ -52,9 +52,16 @@
         };
     };
 
-    led_indicator: led_indicator {
-        compatible = "zmk,poor-mans-led-indicator";
-        gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+    leds {
+        compatible = "gpio-leds";
+        indicator_led: led_0 {
+            gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+            label = "Indicator LED";
+        };
+    };
+
+    aliases {
+        indicator-led = &indicator_led;
     };
 };
 
