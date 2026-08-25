@@ -2,7 +2,7 @@
  * Keypad status LED indicator
  *
  * - BLE connected:      LED steady on
- * - BLE not connected:  LED blinks, toggling every 1000 ms
+ * - BLE not connected:  LED blinks, toggling every 500 ms
  *
  * Uses the `indicator_led` GPIO defined in keypad.overlay (the same LED
  * previously driven by zmk-poor-mans-led-indicator). That widget's BLE
@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(keypad_indicator, CONFIG_ZMK_LOG_LEVEL);
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
 
 /* Blink interval while not connected. */
-#define BLINK_INTERVAL_DISCONNECTED_MS 1000
+#define BLINK_INTERVAL_DISCONNECTED_MS 500
 /* Re-check interval while connected (LED just stays on; this only guards
  * against missing a disconnect event). */
 #define RECHECK_INTERVAL_CONNECTED_MS 1000
