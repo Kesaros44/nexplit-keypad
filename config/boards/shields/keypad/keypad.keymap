@@ -8,7 +8,7 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            bindings = <
+            bindings = 
                                      &kp BSPC         &kp DEL
                 &lt 1 KP_NUM         &kp KP_SLASH     &kp KP_MULTIPLY  &kp KP_MINUS
                 &kp KP_N7            &kp KP_N8        &kp KP_N9        &kp KP_PLUS
@@ -19,12 +19,12 @@
         };
 
         settings_layer {
-            bindings = <
+            bindings = 
                                      &bl BL_TOG       &bl BL_CYCLE
                 &trans               &trans           &bt BT_CLR       &trans
-                &bt BT_SEL 3         &bt BT_SEL 4     &trans           &trans
-                &bt BT_SEL 0         &bt BT_SEL 1     &bt BT_SEL 2
                 &trans               &trans           &trans           &trans
+                &bt BT_SEL 3         &bt BT_SEL 4     &trans
+                &bt BT_SEL 0         &bt BT_SEL 1     &bt BT_SEL 2     &trans
                 &trans                                &trans
             >;
         };
