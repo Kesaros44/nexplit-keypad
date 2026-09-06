@@ -19,7 +19,7 @@ ZMK firmware for the Nexplit Keypad, a standalone 19-key numpad built around a s
 Two layers:
 
 - **`default_layer`** — standard numpad layout (7/8/9, 4/5/6, 1/2/3, 0/., plus, minus, multiply, slash, enter). Top-left key (`&lt 1 BSPC`) taps Backspace, hold to reach `settings_layer`. The Delete-position key instead runs a macro (Win+R → `calc` → Enter) to launch the calculator. The Num Lock key is a plain tap (`&kp KP_NUM`).
-- **`settings_layer`** (held via the top-left key) — Bluetooth profile select (`BT_SEL 0`–`4`), `BT_CLR`, and backlight toggle/cycle (no-op — no backlight hardware).
+- **`settings_layer`** (held via the top-left key) — Bluetooth profile select (`BT_SEL 0`–`4`), `BT_CLR` bound on two keys (Delete-position and one other), and backlight toggle (`BL_TOG`, no-op — no backlight hardware).
 
 ## Building
 
@@ -64,7 +64,7 @@ nice!nano v2 한 대로 만든 독립형 19키 넘패드, Nexplit Keypad용 ZMK 
 레이어 2개:
 
 - **`default_layer`** — 표준 넘패드 배열(7/8/9, 4/5/6, 1/2/3, 0/., 더하기, 빼기, 곱하기, 나누기, 엔터). 왼쪽 위 키(`&lt 1 BSPC`)는 탭하면 백스페이스, 누르고 있으면 `settings_layer`로 진입. Delete 위치의 키는 대신 매크로(Win+R → `calc` → Enter)로 계산기를 실행. Num Lock 키는 순수 탭키(`&kp KP_NUM`).
-- **`settings_layer`** (왼쪽 위 키를 눌러서 진입) — 블루투스 프로필 선택(`BT_SEL 0`–`4`), `BT_CLR`, 백라이트 토글/사이클(백라이트 하드웨어 자체가 없어서 실제 동작은 없음).
+- **`settings_layer`** (왼쪽 위 키를 눌러서 진입) — 블루투스 프로필 선택(`BT_SEL 0`–`4`), `BT_CLR`가 두 개의 키(Delete 위치 포함)에 바인딩, 백라이트 토글(`BL_TOG`, 백라이트 하드웨어 자체가 없어서 실제 동작은 없음).
 
 ## 빌드
 
