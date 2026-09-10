@@ -1,7 +1,7 @@
 /*
  * Keypad status LED indicator
  *
- * - BLE connected:      LED steady on
+ * - BLE connected:      LED on for 60 seconds, then turns off
  * - BLE not connected:  LED blinks, toggling every 500 ms
  *
  * Uses the `indicator_led` GPIO defined in keypad.overlay (the same LED
@@ -38,13 +38,15 @@ LOG_MODULE_REGISTER(keypad_indicator, CONFIG_ZMK_LOG_LEVEL);
 #define LED_NODE DT_NODELABEL(indicator_led)
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
 
+/* LED on duration when connected: 60 seconds */
+#define LED_ON_DURATION_MS 60000
 /* Blink interval while not connected. */
 #define BLINK_INTERVAL_DISCONNECTED_MS 500
-/* Re-check interval while connected (LED just stays on; this only guards
- * against missing a disconnect event). */
+/* Re-check interval while connected (guards against missing disconnect event). */
 #define RECHECK_INTERVAL_CONNECTED_MS 1000
 
 static bool led_is_on = false;
+static int64_t led_on_start_time = 0;
 static struct k_work_delayable led_work;
 
 static void set_led(bool on) {
@@ -56,11 +58,27 @@ static void led_work_handler(struct k_work *work) {
     bool connected = zmk_ble_active_profile_is_connected();
 
     if (connected) {
+        int64_t current_time = k_uptime_get();
+        int64_t elapsed = current_time - led_on_start_time;
+
         if (!led_is_on) {
+            /* First time connected - turn on LED and record start time */
             set_led(true);
+            led_on_start_time = current_time;
+            elapsed = 0;
         }
-        k_work_schedule(&led_work, K_MSEC(RECHECK_INTERVAL_CONNECTED_MS));
+
+        if (elapsed >= LED_ON_DURATION_MS) {
+            /* 60 seconds have passed - turn off LED */
+            set_led(false);
+            k_work_schedule(&led_work, K_MSEC(RECHECK_INTERVAL_CONNECTED_MS));
+        } else {
+            /* Still within 60 second window - check again later */
+            int64_t remaining = LED_ON_DURATION_MS - elapsed;
+            k_work_schedule(&led_work, K_MSEC(remaining));
+        }
     } else {
+        /* Not connected - blink */
         set_led(!led_is_on);
         k_work_schedule(&led_work, K_MSEC(BLINK_INTERVAL_DISCONNECTED_MS));
     }
