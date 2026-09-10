@@ -46,6 +46,7 @@ static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
 #define RECHECK_INTERVAL_CONNECTED_MS 1000
 
 static bool led_is_on = false;
+static bool led_timeout_reached = false;
 static int64_t led_on_start_time = 0;
 static struct k_work_delayable led_work;
 
@@ -61,7 +62,7 @@ static void led_work_handler(struct k_work *work) {
         int64_t current_time = k_uptime_get();
         int64_t elapsed = current_time - led_on_start_time;
 
-        if (!led_is_on) {
+        if (!led_timeout_reached && !led_is_on) {
             /* First time connected - turn on LED and record start time */
             set_led(true);
             led_on_start_time = current_time;
@@ -69,8 +70,11 @@ static void led_work_handler(struct k_work *work) {
         }
 
         if (elapsed >= LED_ON_DURATION_MS) {
-            /* 60 seconds have passed - turn off LED */
-            set_led(false);
+            /* 60 seconds have passed - turn off LED and mark timeout */
+            if (!led_timeout_reached) {
+                set_led(false);
+                led_timeout_reached = true;
+            }
             k_work_schedule(&led_work, K_MSEC(RECHECK_INTERVAL_CONNECTED_MS));
         } else {
             /* Still within 60 second window - check again later */
@@ -78,7 +82,8 @@ static void led_work_handler(struct k_work *work) {
             k_work_schedule(&led_work, K_MSEC(remaining));
         }
     } else {
-        /* Not connected - blink */
+        /* Not connected - reset timeout flag and blink */
+        led_timeout_reached = false;
         set_led(!led_is_on);
         k_work_schedule(&led_work, K_MSEC(BLINK_INTERVAL_DISCONNECTED_MS));
     }
