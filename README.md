@@ -9,7 +9,7 @@ ZMK firmware for the Nexplit Keypad, a standalone 19-key numpad built around a s
 
 - **MCU:** nice!nano v2 (nRF52840), wireless (BLE), not split — one board, one firmware image
 - **Matrix:** 6 rows × 4 columns, 19 physical keys, `col2row`
-- **LED (status):** one indicator LED, driven by a custom driver
+- **LED (status):** one indicator LED, driven by a custom driver — solid for the first 60 seconds after connecting, then auto-off to save power; blinks every 500ms while disconnected
 - **Backlight:** designed into the schematic (PWM), but parts aren't populated and the feature is disabled in firmware — no backlight on the physical board
 - **Bluetooth:** up to 5 paired hosts (`CONFIG_BT_MAX_CONN`/`CONFIG_BT_MAX_PAIRED` raised from the KSN boards' default)
 - **Battery:** reporting enabled
@@ -41,6 +41,13 @@ Double-tap reset on the nice!nano to enter the UF2 bootloader, then drag `keypad
 
 Flash the `settings_reset` artifact to wipe stored BLE bonds, then reflash the normal `keypad` firmware and re-pair.
 
+## Recent Changes
+
+- Status LED now turns off automatically 60 seconds after connecting, instead of staying lit for the whole connected session (still blinks continuously while disconnected) — see `LED_ON_DURATION_MS` in `config/src/keypad_indicator.c`. A follow-up fix corrected the LED re-lighting incorrectly after that 60s timeout.
+- Reworked the Backspace/Delete/Num-lock keys: the top-left key now taps Backspace and holds into the Bluetooth-select layer; the old Delete position launches the calculator instead.
+- Rebound the unused backlight-cycle key to `BT_CLR`.
+- Raised BLE TX power by +8dBm for more reliable connections.
+
 ---
 
 # nexplit-keypad (한국어)
@@ -54,7 +61,7 @@ nice!nano v2 한 대로 만든 독립형 19키 넘패드, Nexplit Keypad용 ZMK 
 
 - **MCU:** nice!nano v2 (nRF52840), 무선(BLE), 스플릿 아님 — 보드 1개, 펌웨어 이미지 1개
 - **매트릭스:** 6행 × 4열, 물리 키 19개, `col2row`
-- **LED (상태):** 인디케이터 LED 1개, 커스텀 드라이버로 구동
+- **LED (상태):** 인디케이터 LED 1개, 커스텀 드라이버로 구동 — 연결 후 처음 60초 동안만 켜져 있다가 절전을 위해 자동 소등, 미연결 시 500ms 간격으로 계속 점멸
 - **백라이트:** 회로도에는 설계되어 있지만(PWM) 부품이 실장되지 않았고 펌웨어 기능도 꺼져 있음 — 실제 보드에는 백라이트 없음
 - **블루투스:** 최대 5개 호스트 페어링(`CONFIG_BT_MAX_CONN`/`CONFIG_BT_MAX_PAIRED`를 KSN 보드 기본값보다 상향)
 - **배터리:** 보고 활성화
@@ -85,3 +92,10 @@ nice!nano의 리셋 버튼을 더블탭해서 UF2 부트로더로 진입한 뒤,
 ## 재페어링 / 블루투스 본딩 초기화
 
 `settings_reset` artifact를 플래시하면 BLE 본딩이 초기화됩니다. 그 다음 정상 `keypad` 펌웨어를 다시 플래시하고 재페어링하세요.
+
+## 최근 변경 사항
+
+- 상태 LED가 연결 후 60초가 지나면 자동으로 꺼지도록 변경(이전에는 연결이 유지되는 동안 계속 켜져 있었음, 미연결 시에는 여전히 계속 점멸) — `config/src/keypad_indicator.c`의 `LED_ON_DURATION_MS` 참고. 60초 타임아웃 이후 LED가 잘못 재점등되던 버그도 후속 수정됨.
+- 백스페이스/Delete/Num Lock 키 재구성: 왼쪽 위 키는 탭하면 백스페이스, 누르고 있으면 블루투스 선택 레이어로 진입하도록 변경되었고, 기존 Delete 자리는 계산기 실행으로 변경.
+- 사용하지 않던 백라이트 전환 키를 `BT_CLR`로 재바인딩.
+- BLE 연결 안정성을 위해 TX 파워 +8dBm 상향.
